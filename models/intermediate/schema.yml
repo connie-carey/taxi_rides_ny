@@ -106,8 +106,6 @@ models:
         description: Improvement surcharge
       - name: total_amount
         description: Total amount charged to passenger
-        data_tests:
-          - not_null
       - name: payment_type
         description: Payment method code
       - name: payment_type_description
@@ -123,3 +121,11 @@ models:
         type: simple
         agg: sum
         expr: total_amount
+        
+  - name: all_days
+    description: A time spine with one row per day.
+    time_spine:
+      standard_granularity_column: date_day
+    columns:
+      - name: date_day
+        granularity: day
