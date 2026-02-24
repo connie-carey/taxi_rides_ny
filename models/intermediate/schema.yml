@@ -104,3 +104,42 @@ models:
         description: Payment method code
       - name: payment_type_description
         description: Human-readable payment method description
+
+semantic_models:
+  - name: trips
+    model: ref('int_trips')
+    description: Semantic model for taxi trips
+
+    entities:
+      - name: trip
+        type: primary
+        expr: trip_id
+
+    dimensions:
+      - name: pickup_datetime
+        type: time
+        expr: pickup_datetime
+        type_params:
+          time_granularity: day
+
+      - name: service_type
+        type: categorical
+        expr: service_type
+
+    measures:
+      - name: trip_total
+        description: Total trip amount including taxes
+        agg: sum
+        expr: total_amount
+
+# ---------------------------
+# METRICS
+# ---------------------------
+
+metrics:
+  - name: trip_total
+    label: Trip total
+    description: The total amount for each trip including taxes
+    type: simple
+    type_params:
+      measure: trip_total
