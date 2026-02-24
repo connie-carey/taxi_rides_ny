@@ -114,6 +114,8 @@ models:
     semantic_model:
       enabled: true
       name: int_trips
+    
+    agg_time_dimension: pickup_datetime
     metrics:
       - name: trip_total
         label: Trip total
