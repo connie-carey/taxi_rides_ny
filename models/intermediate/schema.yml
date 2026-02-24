@@ -44,13 +44,16 @@ models:
         description: Type of taxi service (Green or Yellow)
 
   - name: int_trips
-    description: Cleaned, enriched, and deduplicated trip data ready for marts
+    description: Cleaned, enriched, and deduplicated trip data ready for marts Semantic model for taxi trips
     columns:
       - name: trip_id
         description: Unique trip identifier (surrogate key)
         data_tests:
           - unique
           - not_null
+        entity:
+          type: primary
+          name: trip
       - name: vendor_id
         description: Taxi technology provider ID
         data_tests:
@@ -62,6 +65,8 @@ models:
           - accepted_values:
               arguments:
                 values: ['Green', 'Yellow']
+        dimension:
+          type: categorical
       - name: rate_code_id
         description: Rate code at end of trip
       - name: pickup_location_id
@@ -72,6 +77,9 @@ models:
         description: Timestamp when meter was engaged
         data_tests:
           - not_null
+        dimension:
+          type: time
+        granularity: day
       - name: dropoff_datetime
         description: Timestamp when meter was disengaged
       - name: store_and_fwd_flag
@@ -105,41 +113,13 @@ models:
       - name: payment_type_description
         description: Human-readable payment method description
 
-semantic_models:
-  - name: trips
-    model: ref('int_trips')
-    description: Semantic model for taxi trips
-
-    entities:
-      - name: trip
-        type: primary
-        expr: trip_id
-
-    dimensions:
-      - name: pickup_datetime
-        type: time
-        expr: pickup_datetime
-        type_params:
-          time_granularity: day
-
-      - name: service_type
-        type: categorical
-        expr: service_type
-
-    measures:
+    semantic_model:
+      enabled: true
+      name: int_trips
+    metrics:
       - name: trip_total
-        description: Total trip amount including taxes
+        label: Trip total
+        description: The total amount for each trip including taxes
+        type: simple
         agg: sum
         expr: total_amount
-
-# ---------------------------
-# METRICS
-# ---------------------------
-
-metrics:
-  - name: trip_total
-    label: Trip total
-    description: The total amount for each trip including taxes
-    type: simple
-    type_params:
-      measure: trip_total
